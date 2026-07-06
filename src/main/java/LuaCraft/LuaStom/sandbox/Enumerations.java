@@ -5,6 +5,7 @@ import org.luaj.vm2.LuaValue;
 
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.Material;
 import net.minestom.server.registry.RegistryTag;
 
@@ -66,6 +67,16 @@ public class Enumerations {
             String entityName = type.key().value().toUpperCase();
 
             tbl.set(entityName, LuaValue.valueOf(type.key().asString()));
+        }
+
+        return tbl;
+    }
+
+    public static LuaTable GuiEnums() {
+        LuaTable tbl = new LuaTable();
+
+        for (InventoryType type : InventoryType.values()) {
+            tbl.set(type.toString(), LuaValue.valueOf(type.toString()));
         }
 
         return tbl;

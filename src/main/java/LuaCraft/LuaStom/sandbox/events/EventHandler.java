@@ -4,7 +4,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.luaj.vm2.Globals;
 
-import LuaCraft.LuaStom.sandbox.server.ServerLib;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
@@ -35,8 +34,7 @@ public class EventHandler {
     private EventNode<InstanceEvent> instanceNode = EventNode.type("luacraft_instanceNode", EventFilter.INSTANCE);
 
     public void initNodes() {
-        MinecraftServer server = ServerLib.getServer();
-        GlobalEventHandler handler = server.getGlobalEventHandler();
+        GlobalEventHandler handler = MinecraftServer.getGlobalEventHandler();
 
         handler.addChild(playerNode);
         handler.addChild(entityNode);

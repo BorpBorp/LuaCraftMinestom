@@ -10,12 +10,14 @@ import LuaCraft.LuaStom.LuaErrorAssert;
 import LuaCraft.LuaStom.sandbox.component.ComponentLib;
 import LuaCraft.LuaStom.sandbox.component.ComponentUtil;
 import LuaCraft.LuaStom.sandbox.inventory.DefaultInventoryHandlerLib;
+import LuaCraft.LuaStom.sandbox.inventory.InventoryLib;
 import LuaCraft.LuaStom.sandbox.inventory.PlayerInventoryLib;
 import LuaCraft.LuaStom.sandbox.position.PositionLib;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
+import net.minestom.server.inventory.Inventory;
 import net.minestom.server.tag.Tag;
 
 public class PlayerLib extends LivingEntityLib {
@@ -417,6 +419,21 @@ public class PlayerLib extends LivingEntityLib {
                 } else {
                     return LuaValue.NIL;
                 }
+            }
+        });
+        PLAYER_METATABLE.rawset("OpenInventory", new TwoArgFunction() {
+            @Override
+            public LuaValue call(LuaValue self, LuaValue inventory) {
+                if (self instanceof PlayerLib playerLib) {
+                    Player ply = playerLib.getEntity();
+
+                    if (inventory instanceof InventoryLib inv) {
+                        Inventory inven = inv.getInventory();
+
+                        ply.openInventory(inven);
+                    }
+                }
+                return LuaValue.NIL;
             }
         });
         PLAYER_METATABLE.setmetatable(LIVINGENTITY_METATABLE);

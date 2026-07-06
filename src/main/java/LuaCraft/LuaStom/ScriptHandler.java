@@ -29,6 +29,7 @@ import LuaCraft.LuaStom.sandbox.instance.BlockLib;
 import LuaCraft.LuaStom.sandbox.instance.FastSimplexBuilderLib;
 import LuaCraft.LuaStom.sandbox.instance.InstanceManagerLib;
 import LuaCraft.LuaStom.sandbox.instance.StructureLib;
+import LuaCraft.LuaStom.sandbox.inventory.InventoryLib;
 import LuaCraft.LuaStom.sandbox.inventory.ItemStackLib;
 import LuaCraft.LuaStom.sandbox.os.LuaOs;
 import LuaCraft.LuaStom.sandbox.position.PointLib;
@@ -94,6 +95,7 @@ public class ScriptHandler {
         globals.set("LogLevel", Enumerations.LogEnums());
         globals.set("Tags", Enumerations.TagEnums());
         globals.set("Entities", Enumerations.EntityEnums());
+        globals.set("Guis", Enumerations.GuiEnums());
 
         // Add libraries into the default scope that do not need another object to be
         // accessed
@@ -112,6 +114,7 @@ public class ScriptHandler {
         globals.set("Structure", StructureLib.creator());
         globals.set("Biome", BiomeBuilderLib.creator());
         globals.set("Block", BlockLib.creator());
+        globals.set("Gui", InventoryLib.creator());
 
         // Add thread related functions
         globals.set("NextTick", new NextTick());
@@ -152,42 +155,52 @@ public class ScriptHandler {
                 if (entry.arg1().isnil())
                     break;
                 key = entry.arg1();
+
                 if (key.tojstring().equals("ServerEvent"))
                     continue;
+
                 globals.set(key, entry.arg(2));
             }
 
             FileData data = null;
             try {
                 data = readScriptFile(file);
-            } catch (IOException e) {
-            }
+            } catch (IOException e) {}
 
             if (data == null || data.fileContents() == null) {
                 logger.error("Failed to read contents of " + file.getName() + " please contact author");
                 continue;
             }
 
-            Globals targetEnvironment = (priority > -1) ? sharedGlobals : globals;
-
             try {
-                LuaValue loadedScript = targetEnvironment.load(data.fileContents(), file.getName());
+                LuaValue loadedScript = globals.load(data.fileContents(), file.getName());
+
                 if (loadedScript != null) {
                     loadedScript.call();
                     logger.info("Executed Lua file: " + file.getName() + " (Priority: " + priority + ")");
+
+                    if (priority > -1) {
+                        LuaValue envKey = LuaValue.NIL;
+                        while (true) {
+                            Varargs entry = globals.next(envKey);
+                            if (entry.arg1().isnil())
+                                break;
+                            envKey = entry.arg1();
+
+                            if (sharedGlobals.get(envKey).isnil()) {
+                                sharedGlobals.set(envKey, entry.arg(2));
+                            }
+                        }
+                    }
                 }
             } catch (LuaError e) {
-                throw new LuaError(e.getMessage());
+                logger.error(e.getMessage());
             }
 
             allGlobals.put(file.getName(), globals);
         }
 
         if (firstLoad) {
-            LuaCraft.LuaStom.sandbox.events.EventHandler eventHandler = new LuaCraft.LuaStom.sandbox.events.EventHandler();
-            eventHandler.initNodes();
-            eventHandler.initListeners(allGlobals);
-
             for (Globals globals : allGlobals.values()) {
                 LuaValue serverEvent = globals.get("ServerEvent");
                 LuaValue function = serverEvent.get("OnServerStart");
@@ -195,6 +208,10 @@ public class ScriptHandler {
                     function.call();
                 }
             }
+
+            LuaCraft.LuaStom.sandbox.events.EventHandler eventHandler = new LuaCraft.LuaStom.sandbox.events.EventHandler();
+            eventHandler.initNodes();
+            eventHandler.initListeners(allGlobals);
         }
     }
 
