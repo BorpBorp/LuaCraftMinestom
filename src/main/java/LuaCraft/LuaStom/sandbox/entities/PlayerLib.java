@@ -9,7 +9,6 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import LuaCraft.LuaStom.LuaErrorAssert;
 import LuaCraft.LuaStom.sandbox.component.ComponentLib;
 import LuaCraft.LuaStom.sandbox.component.ComponentUtil;
-import LuaCraft.LuaStom.sandbox.inventory.DefaultInventoryHandlerLib;
 import LuaCraft.LuaStom.sandbox.inventory.InventoryLib;
 import LuaCraft.LuaStom.sandbox.inventory.PlayerInventoryLib;
 import LuaCraft.LuaStom.sandbox.position.PositionLib;
@@ -69,36 +68,6 @@ public class PlayerLib extends LivingEntityLib {
                     Player ply = playerLib.getEntity();
 
                     return new PlayerInventoryLib(ply.getInventory(), ply);
-                } else {
-                    return LuaValue.NIL;
-                }
-            }
-        });
-
-        PLAYER_METATABLE.rawset("SaveInventory", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self) {
-                if (self instanceof PlayerLib playerLib) {
-                    Player ply = playerLib.getEntity();
-
-                    DefaultInventoryHandlerLib.defaultSaveInventory(ply.getInventory(), ply);
-
-                    return self;
-                } else {
-                    return LuaValue.NIL;
-                }
-            }
-        });
-
-        PLAYER_METATABLE.rawset("LoadInventory", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self) {
-                if (self instanceof PlayerLib playerLib) {
-                    Player ply = playerLib.getEntity();
-
-                    DefaultInventoryHandlerLib.defaultLoadInventory(ply.getInventory(), ply);
-
-                    return self;
                 } else {
                     return LuaValue.NIL;
                 }
