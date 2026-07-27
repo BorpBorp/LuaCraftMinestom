@@ -35,6 +35,7 @@ import LuaCraft.LuaStom.sandbox.os.LuaOs;
 import LuaCraft.LuaStom.sandbox.position.PointLib;
 import LuaCraft.LuaStom.sandbox.position.PositionLib;
 import LuaCraft.LuaStom.sandbox.server.ServerLib;
+import LuaCraft.LuaStom.sandbox.tag.TagLib;
 import LuaCraft.LuaStom.sandbox.thread.NextTick;
 import LuaCraft.LuaStom.sandbox.thread.RunAsync;
 import LuaCraft.LuaStom.sandbox.thread.RunSync;
@@ -115,6 +116,7 @@ public class ScriptHandler {
         globals.set("Biome", BiomeBuilderLib.creator());
         globals.set("Block", BlockLib.creator());
         globals.set("Gui", InventoryLib.creator());
+        globals.set("Tag", TagLib.creator());
 
         // Add thread related functions
         globals.set("NextTick", new NextTick());

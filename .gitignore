@@ -44,3 +44,4 @@ bin/
 .DS_Store
 build.gradle.kts
 *.kts
+LuaCraftMinestom.code-workspace

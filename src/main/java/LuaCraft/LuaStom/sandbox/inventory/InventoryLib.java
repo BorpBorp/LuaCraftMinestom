@@ -17,8 +17,9 @@ public class InventoryLib extends AbstractInventoryLib {
         tbl.set("New", new TwoArgFunction() {
             @Override
             public LuaValue call(LuaValue type, LuaValue title) {
-                Inventory inv = new Inventory(InventoryType.valueOf(LuaErrorAssert.checkString(type, "Gui.New", 1)), LuaErrorAssert.checkString(title, "Gui.New", 2));
-                
+                Inventory inv = new Inventory(InventoryType.valueOf(LuaErrorAssert.checkString(type, "Gui.New", 1)),
+                        LuaErrorAssert.checkString(title, "Gui.New", 2));
+
                 return new InventoryLib(inv);
             }
         });
