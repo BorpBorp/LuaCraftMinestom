@@ -11,6 +11,7 @@ import net.minestom.server.MinecraftServer;
 
 public class Main {
     static ConcurrentHashMap<String, Globals> allGlobals = new ConcurrentHashMap<>();
+    public static String version = "1.0.0-ALPHA";
 
     public static void main(String[] args) {
         new ScriptGeneration();
