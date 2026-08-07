@@ -140,6 +140,18 @@ public class LivingEntityLib extends EntityLib {
                 }
             }
         });
+        LIVINGENTITY_METATABLE.rawset("SetHealth", new TwoArgFunction() {
+            @Override
+            public LuaValue call(LuaValue self, LuaValue value) {
+                if (self instanceof LivingEntityLib lEntityLib) {
+                    LivingEntity lEntity = lEntityLib.getEntity();
+                    lEntity.setHealth(LuaErrorAssert.checkFloat(value, "LivingEntity:SetHealth", 1));
+                    return self;
+                } else {
+                    return LuaValue.NIL;
+                }
+            }
+        });
         LIVINGENTITY_METATABLE.setmetatable(ENTITY_METATABLE);
     }
 

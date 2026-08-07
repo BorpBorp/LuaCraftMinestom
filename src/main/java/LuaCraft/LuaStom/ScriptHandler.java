@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import LuaCraft.LuaStom.globals.GlobalFunctions;
 import LuaCraft.LuaStom.sandbox.Enumerations;
 import LuaCraft.LuaStom.sandbox.LuaLogger;
+import LuaCraft.LuaStom.sandbox.command.ArgumentLib;
+import LuaCraft.LuaStom.sandbox.command.CommandLib;
 import LuaCraft.LuaStom.sandbox.component.LuaComponent;
 import LuaCraft.LuaStom.sandbox.entities.EntityLib;
 import LuaCraft.LuaStom.sandbox.entities.ItemLib;
@@ -41,6 +43,7 @@ import LuaCraft.LuaStom.sandbox.thread.RunAsync;
 import LuaCraft.LuaStom.sandbox.thread.RunSync;
 import LuaCraft.LuaStom.sandbox.thread.RunSyncWithLock;
 import LuaCraft.LuaStom.sandbox.thread.Timer;
+import net.minestom.server.MinecraftServer;
 
 public class ScriptHandler {
     private static final Logger logger = LoggerFactory.getLogger("LuaCraft ScriptHandler");
@@ -117,6 +120,8 @@ public class ScriptHandler {
         globals.set("Block", BlockLib.creator());
         globals.set("Gui", InventoryLib.creator());
         globals.set("Tag", TagLib.creator());
+        globals.set("Command", CommandLib.creator(fileName));
+        globals.set("Argument", ArgumentLib.creator());
 
         // Add thread related functions
         globals.set("NextTick", new NextTick());
@@ -140,7 +145,7 @@ public class ScriptHandler {
             return;
         }
 
-        allScriptFiles.sort((a, b) -> Integer.compare(getFilePriority(b), getFilePriority(a)));
+        allScriptFiles.sort((a, b) -> Integer.compare(getFilePriority(a), getFilePriority(b)));
 
         Globals sharedGlobals = JsePlatform.standardGlobals();
         setupScriptGlobals(sharedGlobals, "shared");
@@ -158,7 +163,7 @@ public class ScriptHandler {
                     break;
                 key = entry.arg1();
 
-                if (key.tojstring().equals("ServerEvent"))
+                if (key.tojstring().equals("ServerEvent") || key.tojstring().equals("Command"))
                     continue;
 
                 globals.set(key, entry.arg(2));
@@ -172,6 +177,13 @@ public class ScriptHandler {
             if (data == null || data.fileContents() == null) {
                 logger.error("Failed to read contents of " + file.getName() + " please contact author");
                 continue;
+            }
+
+            List<CommandLib> old = Main.scriptCommands.remove(file.getName());
+            if (old != null) {
+                for (CommandLib cmd : old) {
+                    MinecraftServer.getCommandManager().unregister(cmd.getCommand());
+                }
             }
 
             try {
