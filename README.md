@@ -11,3 +11,5 @@ You can download the latest release of LuaCraft at the [Releases](https://github
 You can find our Discord at [Discord](https://discord.gg/Nvmajwdfmz)<br>
 # Example
 Coming Soon.
+
+I asked for you to remove me from this project please. (i didn't know how to remove myself)
